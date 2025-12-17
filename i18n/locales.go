@@ -32,16 +32,17 @@ var (
 
 // SetDefaultLang sets the default language (must be called after Init)
 func SetDefaultLang(lang string) {
-	localesMu.RLock()
-	_, exists := locales[lang]
-	localesMu.RUnlock()
-	if exists {
+	localesMu.Lock()
+	defer localesMu.Unlock()
+	if _, exists := locales[lang]; exists {
 		defaultLang = lang
 	}
 }
 
 // GetDefaultLang returns the current default language
 func GetDefaultLang() string {
+	localesMu.RLock()
+	defer localesMu.RUnlock()
 	return defaultLang
 }
 

@@ -13,7 +13,16 @@
         window.translations = {{.Translations | toJSON}};
         window.locales = {{.Locales | toJSON}};
         window.defaultLang = {{.DefaultLang | toJSON}};
-        window.currentLang = localStorage.getItem('language') || window.defaultLang;
+
+        // Language: localStorage > server default
+        (function() {
+            const stored = localStorage.getItem('language');
+            if (stored && window.translations[stored]) {
+                window.currentLang = stored;
+            } else {
+                window.currentLang = window.defaultLang;
+            }
+        })();
 
         // Translation helper function
         function t(key, params) {
