@@ -59,18 +59,8 @@ func createTables() {
 		expires_at INTEGER NOT NULL
 	);
 
-	CREATE TABLE IF NOT EXISTS preferences (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		mobile_helper TEXT DEFAULT 'button',
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	);
-
 	CREATE INDEX IF NOT EXISTS idx_items_section ON items(section_id, sort_order);
 	CREATE INDEX IF NOT EXISTS idx_sections_order ON sections(sort_order);
-
-	-- Insert default preferences if not exists
-	INSERT OR IGNORE INTO preferences (id, mobile_helper) VALUES (1, 'button');
 	`
 
 	_, err := DB.Exec(schema)
