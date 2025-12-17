@@ -6,9 +6,12 @@ labels: enhancement
 assignees: ''
 ---
 
-**Describe the feature**
-A clear description of what you want.
+### What would you like?
+
+
+### Why do you need it?
+
 
 ---
 
-👍 Vote on existing feature requests instead of creating duplicates!
+> 👍 Before creating, check if [similar request exists](https://github.com/PanSalut/Koffan/issues?q=is%3Aissue+label%3Aenhancement) and vote instead!
