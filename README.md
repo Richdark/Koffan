@@ -110,6 +110,12 @@ docker run -d -p 80:80 -e APP_PASSWORD=your-password -v koffan-data:/data koffan
 
 Data is stored in `/data/shopping.db`. The volume ensures your data persists across deployments.
 
+## Feature Requests
+
+Have an idea? Check [open feature requests](https://github.com/PanSalut/Koffan/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement) and vote with 👍 on the ones you want most.
+
+Want to suggest something new? [Create an issue](https://github.com/PanSalut/Koffan/issues/new).
+
 ## Support
 
 If you find this project useful, consider supporting its development:
