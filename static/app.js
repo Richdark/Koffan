@@ -669,11 +669,6 @@ function shoppingList() {
 
         async toggleUncertain() {
             if (!this.mobileActionItem) return;
-            if (!this.isOnline) {
-                window.Toast.show(t('offline.action_blocked'), 'warning');
-                this.mobileActionItem = null;
-                return;
-            }
             const itemId = this.mobileActionItem.id;
 
             // Mark as local action to prevent WebSocket race condition
@@ -789,10 +784,6 @@ function shoppingList() {
 
         // Edit Item
         editItem(item) {
-            if (!this.isOnline) {
-                window.Toast.show(t('offline.action_blocked'), 'warning');
-                return;
-            }
             this.editingItem = item;
             this.editItemName = item.name;
             this.editItemDescription = item.description || '';
@@ -813,6 +804,73 @@ function shoppingList() {
             this.editingItem = null;
             this.editItemName = '';
             this.editItemDescription = '';
+
+            // If offline, do optimistic UI update
+            if (!this.isOnline) {
+                const itemEl = document.getElementById(`item-${itemId}`);
+                if (itemEl) {
+                    // Update item name in DOM
+                    const nameEl = itemEl.querySelector('p.text-sm.text-stone-700, p.text-sm.line-through');
+                    if (nameEl) {
+                        nameEl.textContent = name;
+                    }
+
+                    // Update description if exists
+                    const descEl = itemEl.querySelector('p.text-xs.text-stone-400');
+                    if (descEl) {
+                        if (description) {
+                            descEl.textContent = description;
+                        } else {
+                            descEl.remove();
+                        }
+                    } else if (description) {
+                        // Add description element if it doesn't exist
+                        const contentDiv = itemEl.querySelector('.flex-1.min-w-0');
+                        if (contentDiv && nameEl) {
+                            const newDescEl = document.createElement('p');
+                            newDescEl.className = 'text-xs text-stone-400 truncate';
+                            newDescEl.textContent = description;
+                            nameEl.parentNode.insertBefore(newDescEl, nameEl.nextSibling);
+                        }
+                    }
+
+                    // Add sync indicator if not already present
+                    if (!itemEl.classList.contains('pending-sync')) {
+                        itemEl.classList.add('pending-sync', 'bg-rose-50/40', 'border-l-2', 'border-rose-400');
+                        itemEl.setAttribute('data-pending-sync', 'true');
+
+                        // Add sync badge
+                        const existingBadge = itemEl.querySelector('.sync-badge');
+                        if (!existingBadge) {
+                            const badge = document.createElement('span');
+                            badge.className = 'sync-badge text-xs text-rose-500 font-medium flex items-center gap-1';
+                            badge.innerHTML = `
+                                <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                sync
+                            `;
+                            // Insert before action buttons or at the end
+                            const actionDiv = itemEl.querySelector('.flex.items-center.gap-1');
+                            if (actionDiv) {
+                                actionDiv.parentNode.insertBefore(badge, actionDiv);
+                            } else {
+                                itemEl.appendChild(badge);
+                            }
+                        }
+                    }
+                }
+
+                // Queue action for sync
+                await this.queueOfflineAction({
+                    type: 'edit_item',
+                    url: `/items/${itemId}`,
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body
+                });
+                return;
+            }
 
             try {
                 const response = await this.offlineFetch(
@@ -1211,10 +1269,78 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
-        // Block POST /items/:id/uncertain offline - show toast
+        // Handle POST /items/:id/uncertain offline with optimistic UI
         if (verb === 'POST' && path.match(/\/items\/\d+\/uncertain/)) {
             event.preventDefault();
-            window.Toast.show(t('offline.action_blocked'), 'warning');
+
+            const itemId = path.match(/\/items\/(\d+)\/uncertain/)[1];
+            const itemEl = document.getElementById(`item-${itemId}`);
+
+            if (itemEl) {
+                // Check current state
+                const currentlyUncertain = itemEl.classList.contains('bg-amber-50/50');
+                const newState = !currentlyUncertain;
+
+                // Toggle uncertain styling
+                if (newState) {
+                    itemEl.classList.add('bg-amber-50/50');
+                } else {
+                    itemEl.classList.remove('bg-amber-50/50');
+                }
+
+                // Update ? icon
+                const contentDiv = itemEl.querySelector('.flex-1.min-w-0');
+                if (contentDiv) {
+                    const innerDiv = contentDiv.querySelector('.flex.items-center.gap-2');
+                    if (innerDiv) {
+                        const questionMark = innerDiv.querySelector('.text-amber-500.text-xs:not(.offline-sync-badge)');
+                        if (newState && !questionMark) {
+                            const span = document.createElement('span');
+                            span.className = 'text-amber-500 text-xs';
+                            span.textContent = '?';
+                            innerDiv.insertBefore(span, innerDiv.firstChild);
+                        } else if (!newState && questionMark) {
+                            questionMark.remove();
+                        }
+                    }
+                }
+
+                // Update button styling
+                const btn = itemEl.querySelector('.uncertain-btn');
+                if (btn) {
+                    if (newState) {
+                        btn.classList.remove('text-stone-400');
+                        btn.classList.add('text-amber-500');
+                    } else {
+                        btn.classList.remove('text-amber-500');
+                        btn.classList.add('text-stone-400');
+                    }
+                    const svg = btn.querySelector('.uncertain-icon');
+                    if (svg) {
+                        svg.setAttribute('fill', newState ? 'currentColor' : 'none');
+                    }
+                }
+
+                // Add sync indicator
+                itemEl.classList.add('border-l-2', 'border-rose-400');
+                if (!itemEl.querySelector('.offline-sync-badge')) {
+                    const badge = document.createElement('span');
+                    badge.className = 'offline-sync-badge inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-600 ml-2';
+                    badge.innerHTML = `<svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>sync`;
+                    if (contentDiv) {
+                        contentDiv.after(badge);
+                    }
+                }
+            }
+
+            // Queue for sync
+            window.offlineStorage.queueAction({
+                type: 'toggle_uncertain',
+                url: path,
+                method: 'POST'
+            });
+
+            console.log('[Offline] Uncertain toggle queued:', itemId);
             return false;
         }
 
@@ -1314,10 +1440,6 @@ function escapeHtml(text) {
 
 // Global function for uncertain toggle (called from onclick)
 window.toggleUncertain = async function(itemId) {
-    if (!navigator.onLine) {
-        window.Toast.show(t('offline.action_blocked'), 'warning');
-        return;
-    }
     const item = document.getElementById(`item-${itemId}`);
     if (!item) return;
 

@@ -218,9 +218,30 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* Refresh overlay */
+        .refresh-overlay {
+            position: fixed;
+            inset: 0;
+            background: #fafaf9;
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease-out;
+        }
+        .refresh-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .refresh-overlay.fade-out {
+            opacity: 0;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
+    <!-- Refresh overlay -->
+    <div id="refresh-overlay" class="refresh-overlay"></div>
+
     <!-- Pull to refresh indicator -->
     <div id="pull-to-refresh" class="pull-to-refresh-spinner">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
