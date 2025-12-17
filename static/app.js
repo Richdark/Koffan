@@ -93,6 +93,11 @@ function shoppingList() {
         pendingLocalActions: {},
         localActionTimeout: 1000, // ms to ignore WebSocket updates after local action
 
+        // Debounce timers for refresh
+        _refreshListTimer: null,
+        _refreshStatsTimer: null,
+        _isRefreshing: false,
+
         async init() {
             await this.initOffline();
             this.initWebSocket();
@@ -241,7 +246,7 @@ function shoppingList() {
         },
 
         async processOfflineQueue() {
-            if (this.processingQueue || !this.isOnline || !this.offlineStorageReady) return;
+            if (this.processingQueue || !this.isOnline || !this.offlineStorageReady) return false;
 
             this.processingQueue = true;
             console.log('[App] Processing offline queue...');
@@ -252,7 +257,7 @@ function shoppingList() {
                 if (actions.length === 0) {
                     console.log('[App] No queued actions');
                     this.processingQueue = false;
-                    return;
+                    return false;
                 }
 
                 console.log('[App] Processing', actions.length, 'queued actions');
@@ -288,6 +293,8 @@ function shoppingList() {
                 this.refreshList();
                 this.refreshStats();
 
+                return true; // Had queued actions
+
             } finally {
                 this.processingQueue = false;
             }
@@ -296,21 +303,22 @@ function shoppingList() {
         async fullRefresh() {
             console.log('[App] Full refresh triggered');
 
-            // Process any pending offline actions first
-            if (this.isOnline) {
-                await this.processOfflineQueue();
-            }
-
             // Reconnect WebSocket if needed
             if (!this.connected && this.isOnline) {
                 this.reconnectAttempts = 0;
                 this.connect();
             }
 
-            // Refresh from server
+            // Process any pending offline actions first (this already calls refreshList/Stats)
             if (this.isOnline) {
-                this.refreshList();
-                this.refreshStats();
+                const hadQueuedActions = await this.processOfflineQueue();
+
+                // Only refresh if there were no queued actions (processOfflineQueue already did it)
+                if (!hadQueuedActions) {
+                    this.refreshList();
+                    this.refreshStats();
+                }
+
                 this.cacheData();
             }
         },
@@ -463,22 +471,49 @@ function shoppingList() {
         },
 
         refreshList() {
-            const sectionsList = document.getElementById('sections-list');
-            if (sectionsList) {
-                htmx.ajax('GET', '/', {
-                    target: '#sections-list',
-                    swap: 'innerHTML',
-                    select: '#sections-list > *'
-                });
+            // Debounce - prevent multiple rapid refreshes
+            if (this._refreshListTimer) {
+                clearTimeout(this._refreshListTimer);
             }
 
-            const manageSectionsList = document.getElementById('manage-sections-list');
-            if (manageSectionsList) {
-                htmx.ajax('GET', '/sections/list', {
-                    target: '#manage-sections-list',
-                    swap: 'innerHTML'
-                });
-            }
+            this._refreshListTimer = setTimeout(() => {
+                if (this._isRefreshing) return;
+                this._isRefreshing = true;
+
+                const sectionsList = document.getElementById('sections-list');
+                if (sectionsList) {
+                    // Fade out slightly before swap
+                    sectionsList.style.opacity = '0.6';
+                    sectionsList.style.transition = 'opacity 0.15s ease-out';
+
+                    htmx.ajax('GET', '/', {
+                        target: '#sections-list',
+                        swap: 'innerHTML',
+                        select: '#sections-list > *'
+                    }).then(() => {
+                        // Fade back in after swap
+                        requestAnimationFrame(() => {
+                            sectionsList.style.opacity = '1';
+                            setTimeout(() => {
+                                this._isRefreshing = false;
+                            }, 150);
+                        });
+                    }).catch(() => {
+                        sectionsList.style.opacity = '1';
+                        this._isRefreshing = false;
+                    });
+                } else {
+                    this._isRefreshing = false;
+                }
+
+                const manageSectionsList = document.getElementById('manage-sections-list');
+                if (manageSectionsList) {
+                    htmx.ajax('GET', '/sections/list', {
+                        target: '#manage-sections-list',
+                        swap: 'innerHTML'
+                    });
+                }
+            }, 100); // 100ms debounce
         },
 
         refreshSection(sectionId) {
@@ -555,21 +590,28 @@ function shoppingList() {
             });
         },
 
-        async refreshStats() {
-            try {
-                const response = await fetch('/stats');
-                if (response.ok) {
-                    const data = await response.json();
-                    // JSON używa snake_case
-                    this.stats = {
-                        total: data.total_items || 0,
-                        completed: data.completed_items || 0,
-                        percentage: data.percentage || 0
-                    };
-                }
-            } catch (error) {
-                console.error('Failed to refresh stats:', error);
+        refreshStats() {
+            // Debounce - prevent multiple rapid stat refreshes
+            if (this._refreshStatsTimer) {
+                clearTimeout(this._refreshStatsTimer);
             }
+
+            this._refreshStatsTimer = setTimeout(async () => {
+                try {
+                    const response = await fetch('/stats');
+                    if (response.ok) {
+                        const data = await response.json();
+                        // JSON używa snake_case
+                        this.stats = {
+                            total: data.total_items || 0,
+                            completed: data.completed_items || 0,
+                            percentage: data.percentage || 0
+                        };
+                    }
+                } catch (error) {
+                    console.error('Failed to refresh stats:', error);
+                }
+            }, 100); // 100ms debounce
         },
 
         // Section Management
