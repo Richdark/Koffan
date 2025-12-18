@@ -56,7 +56,11 @@
     "language": "Language",
     "coming_soon": "Coming soon...",
     "sponsor": "Want to support the app? Add to cart!",
-    "report_bug": "Found a bug? Let me know!"
+    "report_bug": "Found a bug? Let me know!",
+    "tab_account": "Account",
+    "tab_shopping_list": "Shopping list",
+    "delete_completed": "Delete all bought items",
+    "delete_completed_description": "Removes all items marked as bought from the shopping list."
   },
   "login": {
     "title": "Login - Shopping List",
@@ -70,7 +74,8 @@
   "confirm": {
     "delete_item": "Delete \"{{name}}\"?",
     "delete_sections": "Delete {{count}} selected sections?",
-    "delete_section": "Delete section '{{name}}'?"
+    "delete_section": "Delete section '{{name}}'?",
+    "delete_completed_items": "Delete all bought items?"
   },
   "stats": {
     "progress": "Progress"

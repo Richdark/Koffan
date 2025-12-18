@@ -427,13 +427,16 @@
     </div>
 
     <!-- Settings Modal -->
-    <div x-show="showSettings" x-cloak class="fixed inset-0 z-50 flex items-end md:items-center justify-center">
+    <div x-show="showSettings" x-cloak class="fixed inset-0 z-50 flex items-end md:items-center justify-center"
+         x-data="{ settingsTab: 'account' }">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showSettings = false"></div>
         <div class="relative bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md p-6 max-h-[90vh] overflow-y-auto"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="translate-y-full md:translate-y-0 md:scale-95 opacity-0"
              x-transition:enter-end="translate-y-0 md:scale-100 opacity-100">
-            <div class="flex items-center justify-between mb-6">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-stone-800" x-text="t('settings.title')"></h3>
                 <button @click="showSettings = false" class="p-1 text-stone-400 hover:text-stone-600 rounded-lg hover:bg-stone-100">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -442,31 +445,75 @@
                 </button>
             </div>
 
-            <!-- Language Selection -->
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-stone-600 mb-2" x-text="t('settings.language')"></label>
-                <select
-                    @change="changeLanguage($event.target.value)"
-                    class="w-full border border-stone-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white"
-                >
-                    <template x-for="locale in window.locales" :key="locale.code">
-                        <option :value="locale.code" :selected="window.currentLang === locale.code" x-text="locale.flag + ' ' + locale.name"></option>
-                    </template>
-                </select>
+            <!-- Choice Chips (Tabs) -->
+            <div class="flex gap-2 mb-6">
+                <button
+                    @click="settingsTab = 'account'"
+                    :class="settingsTab === 'account'
+                        ? 'bg-pink-400 text-white'
+                        : 'bg-stone-100 text-stone-600 hover:bg-stone-200'"
+                    class="px-4 py-2 rounded-full text-sm font-medium transition-colors">
+                    <span x-text="t('settings.tab_account')"></span>
+                </button>
+                <button
+                    @click="settingsTab = 'shopping_list'"
+                    :class="settingsTab === 'shopping_list'
+                        ? 'bg-pink-400 text-white'
+                        : 'bg-stone-100 text-stone-600 hover:bg-stone-200'"
+                    class="px-4 py-2 rounded-full text-sm font-medium transition-colors">
+                    <span x-text="t('settings.tab_shopping_list')"></span>
+                </button>
             </div>
 
-            <!-- Sponsor & Bug report -->
-            <div class="pt-4 border-t border-stone-100 space-y-2">
-                <a href="https://github.com/sponsors/PanSalut" target="_blank" rel="noopener"
-                   class="flex items-center gap-2 text-xs text-stone-400 hover:text-pink-500 transition-colors group">
-                    <span class="text-base group-hover:animate-pulse">💖</span>
-                    <span x-text="t('settings.sponsor')"></span>
-                </a>
-                <a href="https://github.com/PanSalut/Koffan/issues" target="_blank" rel="noopener"
-                   class="flex items-center gap-2 text-xs text-stone-400 hover:text-stone-600 transition-colors group">
-                    <span class="text-base">🐛</span>
-                    <span x-text="t('settings.report_bug')"></span>
-                </a>
+            <!-- Tab: Account -->
+            <div x-show="settingsTab === 'account'" x-transition>
+                <!-- Language Selection -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-stone-600 mb-2" x-text="t('settings.language')"></label>
+                    <select
+                        @change="changeLanguage($event.target.value)"
+                        class="w-full border border-stone-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white"
+                    >
+                        <template x-for="locale in window.locales" :key="locale.code">
+                            <option :value="locale.code" :selected="window.currentLang === locale.code" x-text="locale.flag + ' ' + locale.name"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <!-- Sponsor & Bug report -->
+                <div class="pt-4 border-t border-stone-100 space-y-2">
+                    <a href="https://github.com/sponsors/PanSalut" target="_blank" rel="noopener"
+                       class="flex items-center gap-2 text-xs text-stone-400 hover:text-pink-500 transition-colors group">
+                        <span class="text-base group-hover:animate-pulse">💖</span>
+                        <span x-text="t('settings.sponsor')"></span>
+                    </a>
+                    <a href="https://github.com/PanSalut/Koffan/issues" target="_blank" rel="noopener"
+                       class="flex items-center gap-2 text-xs text-stone-400 hover:text-stone-600 transition-colors group">
+                        <span class="text-base">🐛</span>
+                        <span x-text="t('settings.report_bug')"></span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tab: Shopping List -->
+            <div x-show="settingsTab === 'shopping_list'" x-transition>
+                <!-- Delete completed items -->
+                <div class="space-y-3">
+                    <p class="text-sm text-stone-500" x-text="t('settings.delete_completed_description')"></p>
+                    <button
+                        @click="deleteCompletedItems()"
+                        :disabled="!isOnline"
+                        :class="isOnline
+                            ? 'bg-red-50 text-red-600 hover:bg-red-100 border-red-200'
+                            : 'bg-stone-100 text-stone-400 border-stone-200 cursor-not-allowed'"
+                        class="w-full flex items-center justify-center gap-2 p-3 rounded-xl border transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        <span x-text="t('settings.delete_completed')"></span>
+                    </button>
+                    <p x-show="!isOnline" class="text-xs text-stone-400 text-center" x-text="t('offline.action_blocked')"></p>
+                </div>
             </div>
         </div>
     </div>

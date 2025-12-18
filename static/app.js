@@ -505,6 +505,11 @@ function shoppingList() {
                         }
                         this.refreshStats();
                         break;
+                    case 'completed_items_deleted':
+                        // Wszystkie kupione przedmioty zostały usunięte
+                        this.refreshList();
+                        this.refreshStats();
+                        break;
                     case 'pong':
                         break;
                     default:
@@ -836,6 +841,42 @@ function shoppingList() {
             }
 
             this.refreshStats();
+        },
+
+        // Delete all completed items
+        async deleteCompletedItems() {
+            if (!this.isOnline) {
+                window.Toast.show(t('offline.action_blocked'), 'warning');
+                return;
+            }
+
+            const confirmed = confirm(t('confirm.delete_completed_items'));
+            if (!confirmed) return;
+
+            try {
+                const response = await fetch('/items/delete-completed', { method: 'POST' });
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('[App] Deleted', result.deleted, 'completed items');
+
+                    // Close settings modal
+                    this.showSettings = false;
+
+                    // Refresh the list and stats
+                    this.refreshList();
+                    this.refreshStats();
+
+                    // Show success toast
+                    if (result.deleted > 0) {
+                        window.Toast.show(t('settings.delete_completed') + ': ' + result.deleted, 'success');
+                    }
+                } else {
+                    window.Toast.show('Error deleting items', 'warning');
+                }
+            } catch (error) {
+                console.error('[App] Failed to delete completed items:', error);
+                window.Toast.show('Error deleting items', 'warning');
+            }
         },
 
         // Edit Item
@@ -1476,6 +1517,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.body.addEventListener('htmx:afterSwap', function(event) {
+        // Restore correct page title after swap (prevents HTMX from resetting to hardcoded title)
+        document.title = window.translations[window.currentLang]?.list?.title || 'Shopping List';
+
         // Animate only new items after swap
         if (event.detail.target?.id === 'sections-list') {
             document.querySelectorAll('[id^="item-"]').forEach(el => {

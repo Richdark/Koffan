@@ -86,6 +86,19 @@ func DeleteItem(c *fiber.Ctx) error {
 	return c.SendString("")
 }
 
+// DeleteCompletedItems deletes all completed items
+func DeleteCompletedItems(c *fiber.Ctx) error {
+	count, err := db.DeleteCompletedItems()
+	if err != nil {
+		return c.Status(500).SendString("Failed to delete completed items")
+	}
+
+	// Broadcast to WebSocket clients
+	BroadcastUpdate("completed_items_deleted", map[string]int64{"count": count})
+
+	return c.JSON(fiber.Map{"deleted": count})
+}
+
 // ToggleItem toggles the completed status of an item
 func ToggleItem(c *fiber.Ctx) error {
 	id, err := strconv.ParseInt(c.Params("id"), 10, 64)

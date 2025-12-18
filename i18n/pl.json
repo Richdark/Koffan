@@ -56,7 +56,11 @@
     "language": "Język",
     "coming_soon": "Wkrótce...",
     "sponsor": "Chcesz wesprzeć rozwój aplikacji? Dorzuć do koszyka!",
-    "report_bug": "Coś nie działa? Daj znać!"
+    "report_bug": "Coś nie działa? Daj znać!",
+    "tab_account": "Konto",
+    "tab_shopping_list": "Lista zakupów",
+    "delete_completed": "Usuń wszystkie kupione",
+    "delete_completed_description": "Usuwa wszystkie przedmioty oznaczone jako kupione z listy zakupów."
   },
   "login": {
     "title": "Logowanie - Lista Zakupów",
@@ -70,7 +74,8 @@
   "confirm": {
     "delete_item": "Usunąć \"{{name}}\"?",
     "delete_sections": "Usunąć {{count}} wybranych sekcji?",
-    "delete_section": "Usunąć sekcję '{{name}}'?"
+    "delete_section": "Usunąć sekcję '{{name}}'?",
+    "delete_completed_items": "Usunąć wszystkie kupione przedmioty?"
   },
   "stats": {
     "progress": "Postęp"

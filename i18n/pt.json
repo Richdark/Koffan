@@ -56,7 +56,11 @@
     "language": "Idioma",
     "coming_soon": "Em breve...",
     "sponsor": "Quer apoiar o app? Adicione ao carrinho!",
-    "report_bug": "Encontrou um erro? Avise-me!"
+    "report_bug": "Encontrou um erro? Avise-me!",
+    "tab_account": "Conta",
+    "tab_shopping_list": "Lista de compras",
+    "delete_completed": "Excluir todos os comprados",
+    "delete_completed_description": "Remove todos os itens marcados como comprados da lista."
   },
   "login": {
     "title": "Iniciar sessão - Lista de compras",
@@ -70,7 +74,8 @@
   "confirm": {
     "delete_item": "Eliminar \"{{name}}\"?",
     "delete_sections": "Eliminar {{count}} secções selecionadas?",
-    "delete_section": "Eliminar secção '{{name}}'?"
+    "delete_section": "Eliminar secção '{{name}}'?",
+    "delete_completed_items": "Excluir todos os itens comprados?"
   },
   "stats": {
     "progress": "Progresso"

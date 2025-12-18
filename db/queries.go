@@ -253,6 +253,15 @@ func DeleteItem(id int64) error {
 	return err
 }
 
+// DeleteCompletedItems deletes all items where completed = true
+func DeleteCompletedItems() (int64, error) {
+	result, err := DB.Exec(`DELETE FROM items WHERE completed = TRUE`)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 func ToggleItemCompleted(id int64) (*Item, error) {
 	_, err := DB.Exec(`UPDATE items SET completed = NOT completed, updated_at = strftime('%s', 'now') WHERE id = ?`, id)
 	if err != nil {

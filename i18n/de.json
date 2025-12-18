@@ -56,7 +56,11 @@
     "language": "Sprache",
     "coming_soon": "Demnächst verfügbar...",
     "sponsor": "Möchtest du die App unterstützen? Ab in den Warenkorb!",
-    "report_bug": "Fehler gefunden? Sag Bescheid!"
+    "report_bug": "Fehler gefunden? Sag Bescheid!",
+    "tab_account": "Konto",
+    "tab_shopping_list": "Einkaufsliste",
+    "delete_completed": "Alle gekauften löschen",
+    "delete_completed_description": "Entfernt alle als gekauft markierten Artikel aus der Einkaufsliste."
   },
   "login": {
     "title": "Anmeldung - Einkaufsliste",
@@ -70,7 +74,8 @@
   "confirm": {
     "delete_item": "\"{{name}}\" löschen?",
     "delete_sections": "{{count}} ausgewählte Abteilungen löschen?",
-    "delete_section": "Abteilung '{{name}}' löschen?"
+    "delete_section": "Abteilung '{{name}}' löschen?",
+    "delete_completed_items": "Alle gekauften Artikel löschen?"
   },
   "stats": {
     "progress": "Fortschritt"

@@ -144,6 +144,7 @@ func main() {
 
 	// Items API
 	app.Post("/items", handlers.CreateItem)
+	app.Post("/items/delete-completed", handlers.DeleteCompletedItems)
 	app.Put("/items/:id", handlers.UpdateItem)
 	app.Delete("/items/:id", handlers.DeleteItem)
 	app.Post("/items/:id/toggle", handlers.ToggleItem)

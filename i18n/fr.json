@@ -56,7 +56,11 @@
     "language": "Langue",
     "coming_soon": "Bientôt disponible...",
     "sponsor": "Tu veux soutenir l'appli ? Ajoute au panier !",
-    "report_bug": "Un bug ? Fais-le moi savoir !"
+    "report_bug": "Un bug ? Fais-le moi savoir !",
+    "tab_account": "Compte",
+    "tab_shopping_list": "Liste de courses",
+    "delete_completed": "Supprimer tous les achetés",
+    "delete_completed_description": "Supprime tous les articles marqués comme achetés de la liste."
   },
   "login": {
     "title": "Connexion - Liste de courses",
@@ -70,7 +74,8 @@
   "confirm": {
     "delete_item": "Supprimer \"{{name}}\" ?",
     "delete_sections": "Supprimer {{count}} rayons sélectionnés ?",
-    "delete_section": "Supprimer le rayon '{{name}}' ?"
+    "delete_section": "Supprimer le rayon '{{name}}' ?",
+    "delete_completed_items": "Supprimer tous les articles achetés ?"
   },
   "stats": {
     "progress": "Progrès"
