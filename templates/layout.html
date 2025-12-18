@@ -27,6 +27,8 @@
             } else {
                 window.currentLang = window.defaultLang;
             }
+            // Set page title based on language
+            document.title = window.translations[window.currentLang]?.list?.title || 'Shopping List';
         })();
 
         // Translation helper function

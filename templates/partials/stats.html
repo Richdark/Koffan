@@ -6,7 +6,7 @@
     hx-swap="outerHTML"
 >
     <div class="flex items-center justify-between mb-2">
-        <span class="text-sm text-gray-600">Postep</span>
+        <span class="text-sm text-gray-600" x-text="t('stats.progress')">Progress</span>
         <span class="text-sm font-medium text-gray-800">
             {{.Stats.CompletedItems}} / {{.Stats.TotalItems}} ({{.Stats.Percentage}}%)
         </span>

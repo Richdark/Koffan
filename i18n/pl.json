@@ -71,6 +71,9 @@
     "delete_sections": "Usunąć {{count}} wybranych sekcji?",
     "delete_section": "Usunąć sekcję '{{name}}'?"
   },
+  "stats": {
+    "progress": "Postęp"
+  },
   "offline": {
     "title": "Tryb offline",
     "message": "Jesteś w trybie offline. Wszystkie zmiany zostaną automatycznie zsynchronizowane po przywróceniu połączenia.",

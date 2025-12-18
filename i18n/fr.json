@@ -71,6 +71,9 @@
     "delete_sections": "Supprimer {{count}} rayons sélectionnés ?",
     "delete_section": "Supprimer le rayon '{{name}}' ?"
   },
+  "stats": {
+    "progress": "Progrès"
+  },
   "offline": {
     "title": "Mode hors ligne",
     "message": "Vous êtes hors ligne. Toutes les modifications seront automatiquement synchronisées lorsque la connexion sera rétablie.",

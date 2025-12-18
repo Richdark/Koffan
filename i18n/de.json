@@ -71,6 +71,9 @@
     "delete_sections": "{{count}} ausgewählte Abteilungen löschen?",
     "delete_section": "Abteilung '{{name}}' löschen?"
   },
+  "stats": {
+    "progress": "Fortschritt"
+  },
   "offline": {
     "title": "Offline-Modus",
     "message": "Sie sind offline. Alle Änderungen werden automatisch synchronisiert, wenn die Verbindung wiederhergestellt ist.",

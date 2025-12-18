@@ -49,11 +49,7 @@
 
             <!-- Delete -->
             <button
-                hx-delete="/sections/{{.Section.ID}}"
-                hx-target="#manage-section-{{.Section.ID}}"
-                hx-swap="outerHTML"
-                hx-confirm="Usunąć sekcję '{{.Section.Name}}'?"
-                hx-on::after-request="$data.refreshSectionsAndSelects()"
+                @click="if(confirm(t('confirm.delete_section', {name: '{{.Section.Name}}'}))) { htmx.ajax('DELETE', '/sections/{{.Section.ID}}', {target: '#manage-section-{{.Section.ID}}', swap: 'outerHTML'}).then(() => $data.refreshSectionsAndSelects()) }"
                 class="p-1.5 rounded-md hover:bg-red-100 text-stone-400 hover:text-red-500"
             >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
