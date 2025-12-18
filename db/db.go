@@ -85,12 +85,13 @@ func runMigrations() {
 
 	if count == 0 {
 		log.Println("Running migration: Adding updated_at to sections...")
-		_, err := DB.Exec("ALTER TABLE sections ADD COLUMN updated_at INTEGER DEFAULT (strftime('%s', 'now'))")
+		// SQLite doesn't support dynamic DEFAULT in ALTER TABLE, so add with NULL first
+		_, err := DB.Exec("ALTER TABLE sections ADD COLUMN updated_at INTEGER")
 		if err != nil {
 			log.Println("Migration failed for sections:", err)
 		} else {
 			// Set updated_at for existing rows
-			DB.Exec("UPDATE sections SET updated_at = strftime('%s', 'now') WHERE updated_at IS NULL")
+			DB.Exec("UPDATE sections SET updated_at = strftime('%s', 'now')")
 			log.Println("Migration completed: sections.updated_at added")
 		}
 	}
@@ -104,12 +105,13 @@ func runMigrations() {
 
 	if count == 0 {
 		log.Println("Running migration: Adding updated_at to items...")
-		_, err := DB.Exec("ALTER TABLE items ADD COLUMN updated_at INTEGER DEFAULT (strftime('%s', 'now'))")
+		// SQLite doesn't support dynamic DEFAULT in ALTER TABLE, so add with NULL first
+		_, err := DB.Exec("ALTER TABLE items ADD COLUMN updated_at INTEGER")
 		if err != nil {
 			log.Println("Migration failed for items:", err)
 		} else {
 			// Set updated_at for existing rows
-			DB.Exec("UPDATE items SET updated_at = strftime('%s', 'now') WHERE updated_at IS NULL")
+			DB.Exec("UPDATE items SET updated_at = strftime('%s', 'now')")
 			log.Println("Migration completed: items.updated_at added")
 		}
 	}
