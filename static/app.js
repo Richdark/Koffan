@@ -1544,14 +1544,6 @@ window.updateSectionAfterDelete = function(itemElement) {
     if (newTotal === 0) {
         section.classList.add('hidden');
     }
-
-    // Hide "Bought" section if no completed items remain
-    if (newCompletedCount === 0) {
-        const boughtSection = section.querySelector('.border-t.border-stone-100.bg-stone-50\\/50');
-        if (boughtSection) {
-            boughtSection.style.display = 'none';
-        }
-    }
 };
 
 // Get completed section state from localStorage (safe for iOS Safari)
