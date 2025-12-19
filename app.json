@@ -1,0 +1,16 @@
+{
+  "name": "Koffan",
+  "description": "Open source shopping list app - lightweight, fast, self-hosted",
+  "logo": "https://raw.githubusercontent.com/PanSalut/Koffan/main/static/koffan-logo.webp",
+  "keywords": ["go", "shopping-list", "self-hosted", "lightweight"],
+  "stack": "container",
+  "env": {
+    "APP_PASSWORD": {
+      "description": "Password to access the app",
+      "generator": "secret"
+    },
+    "APP_ENV": {
+      "value": "production"
+    }
+  }
+}
