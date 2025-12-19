@@ -19,6 +19,10 @@ RUN CGO_ENABLED=1 go build -o shopping-list .
 # Production stage
 FROM alpine:3.19
 
+LABEL org.opencontainers.image.source=https://github.com/PanSalut/Koffan
+LABEL org.opencontainers.image.description="Open source self-hosted groceries list for families and shared households"
+LABEL org.opencontainers.image.licenses=MIT
+
 WORKDIR /app
 
 # Install runtime dependencies
