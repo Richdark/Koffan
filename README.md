@@ -46,6 +46,7 @@ I built the first version in **Next.js**, but it turned out to be very resource-
 - **Ultra-lightweight** - ~16 MB on disk, ~2.5 MB RAM
 - **PWA** - Install on your phone like a native app
 - **Offline mode** - Add, edit, check/uncheck products without internet (auto-sync when back online)
+- **Auto-completion** - Fuzzy search suggestions from your history, remembers sections
 - Organize products into sections (e.g., Dairy, Vegetables, Cleaning)
 - Mark products as purchased
 - Mark products as "uncertain" (can't find it in the store)
